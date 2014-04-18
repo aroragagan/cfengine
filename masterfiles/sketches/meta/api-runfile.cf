@@ -1,0 +1,46 @@
+# Design Center runfile
+
+body file control
+{
+      inputs => { "/var/cfengine/masterfiles/sketches/security/password_expiration_sketch.cf" };
+}
+
+bundle common cfsketch_g
+{
+  vars:
+      # legacy list, please ignore
+      "inputs" slist => { "cf_null" };
+}
+
+bundle agent cfsketch_run
+{
+  vars:
+      "cf_sketch_testing" data => parsejson('{"activated":"any","test":"!any","verbose":"!any"}');
+       "linux_machines" data => parsejson('{"activated":"linux","test":"!any","verbose":"!any"}');
+
+      # array 'metadata' from definition sketch metadata, activation __Security_password_expiration_1_001_Security_password_expiration_password_expiration
+      "__Security_password_expiration_1_001_Security_password_expiration_password_expiration_metadata" data => parsejson('{"activation":{},"api":{"metadata":{"type":"metadata"},"min_uid":{"type":"string"},"pass_max_days":{"type":"string"},"pass_min_days":{"type":"string"},"pass_warn_age":{"type":"string"},"runenv":{"type":"environment"},"skipped_uids":{"type":"string"},"skipped_users":{"type":"string"}},"authors":["aroragagan24@gmail.com"],"bundle_options":{},"depends":["CFEngine::sketch_template"],"license":"MIT","location":"/var/cfengine/masterfiles/sketches/security","manifest":["README.md","password_expiration_sketch.cf"],"manifest_cf":["password_expiration_sketch.cf"],"manifest_docs":["README.md"],"manifest_exe":[],"manifest_extra":[],"manifest_test":[],"name":"Security::password_expiration","tags":["enterprise_compatible","password","security","sixified","sketchify_generated"],"version":"1.0"}');
+
+  methods:
+    any::
+      "cfsketch_g" usebundle => "cfsketch_g";
+
+      # invocation lines
+    linux::
+      "__Security_password_expiration_1_001_Security_password_expiration_password_expiration" -> { "Security::password_expiration-1", "Security::password_expiration", "password_expiration", "fb9e7abba33c5186ff57fa5cc30bdf42" }
+      usebundle => password_expiration(@(cfsketch_run.linux_machines),
+          @(cfsketch_run.__Security_password_expiration_1_001_Security_password_expiration_password_expiration_metadata),
+          '90',
+          '',
+          '3',
+          '',
+          'gagan',
+          ''),
+      handle => "dc_method_call___Security_password_expiration_1_001_Security_password_expiration_password_expiration",
+      ifvarclass => "any",
+      useresult => "return___Security_password_expiration_1_001_Security_password_expiration_password_expiration";
+
+  reports:
+    inform_mode::
+      "activation __Security_password_expiration_1_001_Security_password_expiration_password_expiration could not run because it requires classes any" handle => "dc_return_report___Security_password_expiration_1_001_Security_password_expiration_password_expiration", ifvarclass => "inform_mode.!(any)";
+}
